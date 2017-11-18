@@ -62,22 +62,48 @@ namespace bookstore.Controllers
         // GET: Book/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            ViewBag.Authors = db.Authors;
+            ViewBag.AuthorsSelected = db.BookAuthors.Where(r => r.BookID == id).ToList();
+
+            var model = db.Books.Find(id);
+            return View(model);
         }
 
         // POST: Book/Edit/5
         [HttpPost]
         public ActionResult Edit(int id, FormCollection collection)
         {
+            ViewBag.Authors = db.Authors;
             try
             {
-                // TODO: Add update logic here
+
+                if (!collection.AllKeys.Contains("author"))
+                {
+                    ModelState.AddModelError("", "Please select any author");
+                    return View();
+                }
+                var book = db.Books.Find(id);
+               
+                if (TryUpdateModel(book))
+                {
+                    var authors = collection.Get("author").Split(',').Select(x => int.Parse(x.ToString())).ToArray();
+
+                    var toDelete = from r in db.BookAuthors
+                                   where r.BookID == id
+                                   select r;
+                    db.BookAuthors.RemoveRange(toDelete);
+                    SaveBookAuthor(id, authors);
+                    db.SaveChanges();
+
+                    return RedirectToAction("Index");
+                }
 
                 return RedirectToAction("Index");
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                ModelState.AddModelError("", ex.Message);
+                return View(collection);
             }
         }
 
