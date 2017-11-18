@@ -12,8 +12,10 @@ namespace bookstore.Controllers
         BookStoreContext db = new BookStoreContext();
         public ActionResult Index()
         {
-            var model = db.Books;
-            return View(model);
+            var books = from r in db.Books
+                        orderby r.Title, r.DateEdition
+                        select r;
+            return View(books);
         }
 
         // GET: Book/Details/5
@@ -52,7 +54,7 @@ namespace bookstore.Controllers
 
                 return RedirectToAction("Index");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ModelState.AddModelError("", ex.Message);
                 return View(collection);
@@ -83,7 +85,7 @@ namespace bookstore.Controllers
                     return View();
                 }
                 var book = db.Books.Find(id);
-               
+
                 if (TryUpdateModel(book))
                 {
                     var authors = collection.Get("author").Split(',').Select(x => int.Parse(x.ToString())).ToArray();

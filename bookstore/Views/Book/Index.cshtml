@@ -18,6 +18,9 @@
         <th>
             @Html.DisplayNameFor(model => model.DateEdition)
         </th>
+        <th>
+            Authors
+        </th>
         <th></th>
     </tr>
 
@@ -30,9 +33,13 @@
             @Html.DisplayFor(modelItem => item.DateEdition)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.BookID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.BookID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.BookID })
+            @foreach (var author in item.BookAuthors)
+            {
+                <span>@author.AuthorID</span>
+            }
+            </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.BookID })           
         </td>
     </tr>
 }
