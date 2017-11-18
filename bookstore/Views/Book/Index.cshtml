@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<bookstore.Models.BookViewModel>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Books";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -10,7 +10,47 @@
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
-<table class="table">
+
+@using (Ajax.BeginForm("Search", "Book", new AjaxOptions
+{
+    HttpMethod = "GET",
+    InsertionMode = InsertionMode.Replace,
+    UpdateTargetId = "searchResults"
+}))
+{
+    <div class="col-md-4">
+        <div class="form-group clearfix">
+            <label class="control-label col-md-10" for="title">Title</label>
+            <div class="col-md-10">
+                <input class="form-control text-box single-line" id="title" name="title" type="text" />
+            </div>
+        </div>
+
+        <div class="form-group clearfix">
+            <label class="control-label col-md-10" for="date">Date Edition (MM/dd/yyyy)</label>
+            <div class="col-md-10">
+                <input class="form-control text-box single-line" id="date" name="date" type="date" />               
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group clearfix">
+            <label class="control-label col-md-10" for="authors">Authors</label>
+            <div class="col-md-10">
+                <input class="form-control text-box single-line" id="authors" name="authors" type="text" />
+            </div>
+        </div>
+
+        <div class="form-group clearfix">
+            <label class="control-label col-md-10"></label>
+            <div class="col-md-10">
+                <input type="submit" value="Search" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<table class="table" id="searchResults">
     <tr>
         <th>
             @Html.DisplayNameFor(model => model.Title)
@@ -24,24 +64,28 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Title)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.DateEdition)
-        </td>
-        <td>
-            @foreach (var author in item.BookAuthors)
-            {
-                <span>@author.AuthorID</span>
-            }
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
             </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.BookID })           
-        </td>
-    </tr>
-}
+            <td>
+                @Html.DisplayFor(modelItem => item.DateEdition)
+            </td>
+            <td>
+                @foreach (var author in item.BookAuthors)
+                {
+                    <span>@author.AuthorID</span>
+                }
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.BookID })
+            </td>
+        </tr>
+    }
 
 </table>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

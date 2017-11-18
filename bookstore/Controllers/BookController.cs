@@ -109,29 +109,26 @@ namespace bookstore.Controllers
             }
         }
 
-        // GET: Book/Delete/5
-        public ActionResult Delete(int id)
+        public PartialViewResult Search(string title, string date, string authors)
         {
-            return View();
-        }
-
-        // POST: Book/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
-        {
-            try
+            var books = from r in db.Books
+                        where r.Title.Contains(title)
+                        select r;
+            if (!string.IsNullOrEmpty(date))
             {
-                // TODO: Add delete logic here
 
-                return RedirectToAction("Index");
+                try
+                {
+                    var dateTime = Convert.ToDateTime(date);
+                    books = db.Books.Where(r => r.Title.Contains(title) && r.DateEdition == dateTime);
+                }
+                catch (Exception)
+                {
+                    ModelState.AddModelError("", "Please a valid date");
+                }
             }
-            catch
-            {
-                return View();
-            }
+            return PartialView("_SearchBook", books);
         }
-
-
         private void SaveBookAuthor(int id, int[] authors)
         {
             try
